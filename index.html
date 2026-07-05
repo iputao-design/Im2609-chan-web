@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IM2609 5F 缠论 K线走势</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Chan 5F Stroke Monitor</p>
+          <h1>IM2609 5F 缠论 K线走势</h1>
+        </div>
+        <div class="status">
+          <span id="rangeLabel">读取中</span>
+          <span id="updatedLabel">--</span>
+        </div>
+      </header>
+
+      <section class="metrics" aria-label="统计摘要">
+        <div>
+          <span>总空间振幅</span>
+          <strong id="totalAmp">--</strong>
+        </div>
+        <div>
+          <span>成笔数量</span>
+          <strong id="strokeCount">--</strong>
+        </div>
+        <div>
+          <span>单笔平均振幅</span>
+          <strong id="avgStroke">--</strong>
+        </div>
+        <div>
+          <span>最小一笔振幅</span>
+          <strong id="minStroke">--</strong>
+        </div>
+        <div>
+          <span>最大一笔振幅</span>
+          <strong id="maxStroke">--</strong>
+        </div>
+        <div>
+          <span>当前视窗</span>
+          <strong id="windowInfo">--</strong>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="chart-panel">
+          <div class="chart-toolbar">
+            <div class="legend">
+              <span><i class="up"></i>上涨K线</span>
+              <span><i class="down"></i>下跌K线</span>
+              <span><i class="stroke"></i>5F一笔</span>
+              <span><i class="rsi-yellow"></i>RSI6&lt;25</span>
+              <span><i class="rsi-green"></i>RSI6&lt;15</span>
+              <span><i class="rsi-red"></i>RSI6&lt;5</span>
+            </div>
+            <div class="actions">
+              <button id="zoomOut" type="button">缩小</button>
+              <button id="zoomIn" type="button">放大</button>
+              <button id="resetView" type="button">全览</button>
+            </div>
+          </div>
+          <div class="canvas-wrap" id="canvasWrap">
+            <canvas id="chart"></canvas>
+            <div id="tooltip" class="tooltip" hidden></div>
+          </div>
+          <div class="slider-row">
+            <span>上市以来</span>
+            <input id="panSlider" type="range" min="0" max="0" value="0" />
+            <span>最新</span>
+          </div>
+        </div>
+
+        <aside class="detail-panel">
+          <h2>滑动查看</h2>
+          <dl id="barDetails">
+            <div><dt>时间</dt><dd>--</dd></div>
+            <div><dt>开高低收</dt><dd>--</dd></div>
+            <div><dt>成交量</dt><dd>--</dd></div>
+            <div><dt>RSI(6)</dt><dd>--</dd></div>
+            <div><dt>所属一笔</dt><dd>--</dd></div>
+            <div><dt>一笔区间</dt><dd>--</dd></div>
+            <div><dt>一笔振幅</dt><dd>--</dd></div>
+          </dl>
+          <div class="hint">
+            <p>拖动画布平移，滚轮缩放；底部滑杆快速切换时间段。</p>
+            <p>蓝色线连接每笔起止分型，悬停任意 K 线会显示对应一笔。</p>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
