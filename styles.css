@@ -72,6 +72,33 @@ h1 {
   background: rgba(255, 255, 255, 0.72);
 }
 
+.level-switch {
+  display: inline-flex;
+  gap: 4px;
+  margin: 0 0 12px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.level-switch button {
+  min-width: 64px;
+  height: 32px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.level-switch button.active {
+  background: #172033;
+  color: #fff;
+}
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -141,6 +168,11 @@ h1 {
   gap: 7px;
   color: #334155;
   font-size: 13px;
+}
+
+.legend b {
+  font: inherit;
+  font-weight: 400;
 }
 
 .legend i {

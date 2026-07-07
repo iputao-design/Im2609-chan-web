@@ -1,5 +1,7 @@
 const state = {
+  rootData: null,
   data: null,
+  level: "5F",
   bars: [],
   strokes: [],
   start: 0,
@@ -34,6 +36,11 @@ function dateShort(time) {
 
 function byStroke(no) {
   return state.strokes.find((item) => item.strokeNo === no);
+}
+
+function levelData(level) {
+  if (state.rootData?.levels?.[level]) return state.rootData.levels[level];
+  return state.rootData;
 }
 
 function markerColor(marker) {
@@ -252,8 +259,12 @@ function draw() {
 
 function updateSummary() {
   const summary = state.data.summary;
+  document.querySelectorAll("[data-level]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.level === state.level);
+  });
+  document.getElementById("strokeLegend").textContent = `${state.level}一笔`;
   document.getElementById("rangeLabel").textContent = `${summary.start_time} - ${summary.end_time}`;
-  document.getElementById("updatedLabel").textContent = `网页数据生成：${state.data.updatedAt}`;
+  document.getElementById("updatedLabel").textContent = `网页数据生成：${state.rootData.updatedAt}`;
   document.getElementById("totalAmp").textContent = `${fmt.format(num(summary.total_space_points))} 点`;
   document.getElementById("strokeCount").textContent = `${summary.stroke_count} 笔`;
   document.getElementById("avgStroke").textContent = `${fmt.format(num(summary.avg_space_points))} 点`;
@@ -282,7 +293,7 @@ function updateDetails(index) {
   slots[1].textContent = `O ${fmt.format(bar.open)} / H ${fmt.format(bar.high)} / L ${fmt.format(bar.low)} / C ${fmt.format(bar.close)}`;
   slots[2].textContent = `${fmt.format(bar.volume)}，持仓 ${fmt.format(bar.openInterest)}`;
   slots[3].textContent = `${fmt.format(bar.rsi6)}${bar.rsiMarker ? `，${bar.rsiMarker === "red" ? "红圈" : bar.rsiMarker === "green" ? "绿圈" : "黄圈"}` : ""}`;
-  slots[4].textContent = stroke ? `第 ${stroke.strokeNo} 笔，${stroke.direction === "up" ? "向上" : "向下"}` : "未归属已确认一笔";
+  slots[4].textContent = stroke ? `${state.level}第 ${stroke.strokeNo} 笔，${stroke.direction === "up" ? "向上" : "向下"}` : "未归属已确认一笔";
   slots[5].textContent = stroke ? `${dateShort(stroke.startTime)} -> ${dateShort(stroke.endTime)}` : "--";
   slots[6].textContent = stroke ? `${fmt.format(stroke.spacePoints)} 点，${pctFmt.format(stroke.spacePct)}%` : "--";
 }
@@ -297,7 +308,7 @@ function showTooltip(index, clientX, clientY) {
     <p>开 ${fmt.format(bar.open)}　高 ${fmt.format(bar.high)}　低 ${fmt.format(bar.low)}　收 ${fmt.format(bar.close)}</p>
     <p>RSI(6) ${fmt.format(bar.rsi6)}${bar.rsiMarker ? `　${bar.rsiMarker === "red" ? "红圈" : bar.rsiMarker === "green" ? "绿圈" : "黄圈"}` : ""}</p>
     <p>成交量 ${fmt.format(bar.volume)}　持仓 ${fmt.format(bar.openInterest)}</p>
-    <p>${stroke ? `第 ${stroke.strokeNo} 笔 ${stroke.direction === "up" ? "向上" : "向下"}，振幅 ${fmt.format(stroke.spacePoints)} 点` : "未归属已确认一笔"}</p>
+    <p>${stroke ? `${state.level}第 ${stroke.strokeNo} 笔 ${stroke.direction === "up" ? "向上" : "向下"}，振幅 ${fmt.format(stroke.spacePoints)} 点` : "未归属已确认一笔"}</p>
   `;
   const wrapRect = wrap.getBoundingClientRect();
   const left = clamp(clientX - wrapRect.left + 14, 10, wrapRect.width - tooltip.offsetWidth - 12);
@@ -334,6 +345,9 @@ function setCount(nextCount, anchorIndex = state.start + Math.floor(state.count 
 
 function bindEvents() {
   window.addEventListener("resize", draw);
+  document.querySelectorAll("[data-level]").forEach((button) => {
+    button.addEventListener("click", () => setLevel(button.dataset.level));
+  });
   slider.addEventListener("input", () => setStart(Number(slider.value)));
   document.getElementById("zoomIn").addEventListener("click", () => setCount(state.count * 0.72));
   document.getElementById("zoomOut").addEventListener("click", () => setCount(state.count * 1.38));
@@ -391,24 +405,35 @@ function bindEvents() {
   );
 }
 
-async function init() {
-  if (window.IM2609_DATA) {
-    state.data = window.IM2609_DATA;
-  } else {
-    const response = await fetch(`./im2609-data.json?v=${Date.now()}`, { cache: "no-store" });
-    if (!response.ok) throw new Error(`读取数据失败：${response.status}`);
-    state.data = await response.json();
-  }
+function setLevel(level) {
+  const data = levelData(level);
+  if (!data) return;
+  state.level = level;
+  state.data = data;
   state.bars = state.data.bars;
   state.strokes = state.data.strokes;
   state.count = Math.min(260, state.bars.length);
   state.start = Math.max(0, state.bars.length - state.count);
   slider.max = String(Math.max(0, state.bars.length - state.count));
   slider.value = String(state.start);
+  state.hoverIndex = null;
+  tooltip.hidden = true;
   updateSummary();
   updateDetails(state.bars.length - 1);
-  bindEvents();
   draw();
+}
+
+async function init() {
+  if (window.IM2609_DATA) {
+    state.rootData = window.IM2609_DATA;
+  } else {
+    const response = await fetch(`./im2609-data.json?v=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`读取数据失败：${response.status}`);
+    state.rootData = await response.json();
+  }
+  state.level = state.rootData.defaultLevel || state.rootData.level || "5F";
+  setLevel(state.level);
+  bindEvents();
 }
 
 init().catch((error) => {

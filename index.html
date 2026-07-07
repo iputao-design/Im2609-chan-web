@@ -3,21 +3,26 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>IM2609 5F 缠论 K线走势</title>
+    <title>IM2609 缠论 K线走势</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Chan 5F Stroke Monitor</p>
-          <h1>IM2609 5F 缠论 K线走势</h1>
+          <p class="eyebrow">Chan Stroke Monitor</p>
+          <h1>IM2609 缠论 K线走势</h1>
         </div>
         <div class="status">
           <span id="rangeLabel">读取中</span>
           <span id="updatedLabel">--</span>
         </div>
       </header>
+
+      <section class="level-switch" aria-label="级别切换">
+        <button class="active" data-level="5F" type="button">5F</button>
+        <button data-level="30F" type="button">30F</button>
+      </section>
 
       <section class="metrics" aria-label="统计摘要">
         <div>
@@ -52,7 +57,7 @@
             <div class="legend">
               <span><i class="up"></i>上涨K线</span>
               <span><i class="down"></i>下跌K线</span>
-              <span><i class="stroke"></i>5F一笔</span>
+              <span><i class="stroke"></i><b id="strokeLegend">5F一笔</b></span>
               <span><i class="rsi-yellow"></i>RSI6&lt;25</span>
               <span><i class="rsi-green"></i>RSI6&lt;15</span>
               <span><i class="rsi-red"></i>RSI6&lt;5</span>
