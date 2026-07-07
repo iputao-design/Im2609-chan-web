@@ -395,7 +395,7 @@ async function init() {
   if (window.IM2609_DATA) {
     state.data = window.IM2609_DATA;
   } else {
-    const response = await fetch("./im2609-data.json", { cache: "no-store" });
+    const response = await fetch(`./im2609-data.json?v=${Date.now()}`, { cache: "no-store" });
     if (!response.ok) throw new Error(`读取数据失败：${response.status}`);
     state.data = await response.json();
   }
